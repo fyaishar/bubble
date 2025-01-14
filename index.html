@@ -40,14 +40,14 @@
         // Alpha Vantage API key
         const API_KEY = '1Q997OJZEAUKB8KL';
 
-        // Fetch latest SPX value
+        // Fetch the latest SPX value
         async function fetchLatestSPX() {
             const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPX&apikey=${API_KEY}`;
             const response = await fetch(url);
             const data = await response.json();
 
-            // Extract latest price
-            const latestPrice = data['Global Quote']['05. price'];
+            // Extract the latest price
+            const latestPrice = data['Global Quote']?.['05. price'];
             if (latestPrice) {
                 return parseFloat(latestPrice);
             } else {
