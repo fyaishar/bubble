@@ -62,11 +62,9 @@
 
             try {
                 const SPX = await fetchLatestSPX(); // Fetch latest SPX value
-                const USM2 = 1.5; // Placeholder for U.S. Money Supply
 
-                // Perform the calculation
-                const calculatedValue = (SPX / USM2) * 10000000000;
-                const percentage = ((calculatedValue - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100;
+                // Corrected percentage calculation
+                const percentage = ((SPX - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100;
 
                 // Display the result
                 document.getElementById('percentage').innerText = percentage.toFixed(2) + '%';
