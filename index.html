@@ -33,27 +33,12 @@
     <img src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
     <div id="percentage">Loading...</div>
     <script>
+        // Hardcoded historical SPX values
+        const HIGH_2000 = 1552.87; // SPX high on March 24, 2000
+        const CLOSE_2023 = 4607.35; // SPX close on December 7, 2023
+
         // Alpha Vantage API key
         const API_KEY = '1Q997OJZEAUKB8KL';
-
-        // Historical dates
-        const HIGH_2000_DATE = '2000-03-24';
-        const CLOSE_2023_DATE = '2023-12-07';
-
-        // Fetch historical SPX data
-        async function fetchSPXData(date) {
-            const url = `https://www.alphavantage.co/query?function=TIME_SERIES_DAILY_ADJUSTED&symbol=SPX&apikey=${API_KEY}`;
-            const response = await fetch(url);
-            const data = await response.json();
-
-            // Extract close price for the given date
-            const timeSeries = data['Time Series (Daily)'];
-            if (timeSeries && timeSeries[date]) {
-                return parseFloat(timeSeries[date]['4. close']);
-            } else {
-                throw new Error(`Data for ${date} not found.`);
-            }
-        }
 
         // Fetch latest SPX value
         async function fetchLatestSPX() {
@@ -73,10 +58,6 @@
         // Calculate and display the percentage
         async function calculatePercentage() {
             try {
-                // Fetch historical SPX data
-                const HIGH_2000 = await fetchSPXData(HIGH_2000_DATE);
-                const CLOSE_2023 = await fetchSPXData(CLOSE_2023_DATE);
-
                 // Fetch the latest SPX value
                 const SPX = await fetchLatestSPX();
                 const USM2 = 1.5; // Placeholder; replace with correct data if needed
