@@ -49,7 +49,9 @@
             }
             const latestPrice = data['Global Quote']?.['05. price'];
             if (latestPrice) {
-                return parseFloat(latestPrice) * 10; // Convert SPY to SPX
+                const SPX = parseFloat(latestPrice) * 10; // Convert SPY to SPX
+                console.log(`SPY Price: ${latestPrice}, Calculated SPX: ${SPX}`);
+                return SPX;
             } else {
                 throw new Error('Latest SPX data not found.');
             }
@@ -63,8 +65,16 @@
             try {
                 const SPX = await fetchLatestSPX(); // Fetch latest SPX value
 
+                // Debugging: Log the components of the formula
+                console.log(`HIGH_2000: ${HIGH_2000}`);
+                console.log(`CLOSE_2023: ${CLOSE_2023}`);
+                console.log(`Current SPX: ${SPX}`);
+
                 // Corrected percentage calculation
                 const percentage = ((SPX - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100;
+
+                // Log the calculated percentage
+                console.log(`Calculated Percentage: ${percentage}`);
 
                 // Display the result
                 document.getElementById('percentage').innerText = percentage.toFixed(2) + '%';
