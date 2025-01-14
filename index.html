@@ -23,17 +23,18 @@
             max-height: 70%;
         }
         #percentage {
-            font-size: 120px; /* 50% larger */
+            font-size: 120px; /* Large percentage size */
             font-weight: bold;
             margin-top: 20px;
             color: white; /* Modern clean font color */
             text-align: center;
+            visibility: hidden; /* Hidden until calculated */
         }
     </style>
 </head>
 <body>
     <img src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
-    <div id="percentage">Loading...</div>
+    <div id="percentage"></div>
     <script>
         // Alpha Vantage API key
         const API_KEY = '1Q997OJZEAUKB8KL';
@@ -44,11 +45,6 @@
             const response = await fetch(url);
             const data = await response.json();
 
-            console.log('API Response:', data); // Debugging output
-
-            if (data.Note) {
-                throw new Error('API rate limit exceeded. Try again later.');
-            }
             const latestPrice = data['Global Quote']?.['05. price'];
             if (latestPrice) {
                 return parseFloat(latestPrice) * 10; // Convert SPY to SPX
@@ -65,13 +61,14 @@
             try {
                 const SPX = await fetchLatestSPX(); // Fetch latest SPX value
 
-                // Corrected percentage calculation with absolute value
+                // Corrected percentage calculation with absolute value and rounded to the nearest whole number
                 const percentage = Math.abs(((SPX - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100);
 
-                // Display the result
-                document.getElementById('percentage').innerText = percentage.toFixed(2) + '%';
+                // Display the result, rounded to a whole number
+                const percentageDiv = document.getElementById('percentage');
+                percentageDiv.innerText = Math.round(percentage) + '%';
+                percentageDiv.style.visibility = 'visible'; // Show the percentage
             } catch (error) {
-                console.error('Error calculating data:', error);
                 document.getElementById('percentage').innerText = 'Error';
             }
         }
