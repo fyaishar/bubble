@@ -1,46 +1,83 @@
-// Alpha Vantage API key
-const API_KEY = '1Q997OJZEAUKB8KL';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Minimalist Website</title>
+    <style>
+        body {
+            margin: 0;
+            background-color: black;
+            color: white;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            font-family: Arial, sans-serif;
+        }
+        img {
+            max-width: 90%;
+            max-height: 70%;
+        }
+        #percentage {
+            font-size: 80px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <img src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
+    <div id="percentage">Loading...</div>
+    <script>
+        // Alpha Vantage API key
+        const API_KEY = '1Q997OJZEAUKB8KL';
 
-// Fetch the latest SPX value
-async function fetchLatestSPX() {
-    const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=^GSPC&apikey=${API_KEY}`;
-    const response = await fetch(url);
-    const data = await response.json();
+        // Fetch the latest SPY value and multiply by 10 for SPX equivalent
+        async function fetchLatestSPX() {
+            const url = `https://www.alphavantage.co/query?function=GLOBAL_QUOTE&symbol=SPY&apikey=${API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
 
-    // Debugging: Log the API response
-    console.log('API Response:', data);
+            console.log('API Response:', data); // Debugging output
 
-    if (data.Note) {
-        throw new Error('API rate limit exceeded. Try again later.');
-    }
-    if (data['Global Quote'] && data['Global Quote']['05. price']) {
-        return parseFloat(data['Global Quote']['05. price']);
-    } else {
-        throw new Error('Latest SPX data not found.');
-    }
-}
+            if (data.Note) {
+                throw new Error('API rate limit exceeded. Try again later.');
+            }
+            const latestPrice = data['Global Quote']?.['05. price'];
+            if (latestPrice) {
+                return parseFloat(latestPrice) * 10; // Convert SPY to SPX
+            } else {
+                throw new Error('Latest SPX data not found.');
+            }
+        }
 
-// Calculate and display the percentage
-async function calculatePercentage() {
-    const HIGH_2000 = 1552.87; // SPX high on March 24, 2000
-    const CLOSE_2023 = 4607.35; // SPX close on December 7, 2023
+        // Calculate and display the percentage
+        async function calculatePercentage() {
+            const HIGH_2000 = 1552.87; // SPX high on March 24, 2000
+            const CLOSE_2023 = 4607.35; // SPX close on December 7, 2023
 
-    try {
-        // Fetch the latest SPX value
-        const SPX = await fetchLatestSPX();
-        const USM2 = 1.5; // Placeholder for U.S. Money Supply
+            try {
+                const SPX = await fetchLatestSPX(); // Fetch latest SPX value
+                const USM2 = 1.5; // Placeholder for U.S. Money Supply
 
-        // Perform the calculation
-        const calculatedValue = (SPX / USM2) * 10000000000;
-        const percentage = ((calculatedValue - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100;
+                // Perform the calculation
+                const calculatedValue = (SPX / USM2) * 10000000000;
+                const percentage = ((calculatedValue - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100;
 
-        // Display the result
-        document.getElementById('percentage').innerText = percentage.toFixed(2) + '%';
-    } catch (error) {
-        console.error('Error calculating data:', error);
-        document.getElementById('percentage').innerText = 'Error';
-    }
-}
+                // Display the result
+                document.getElementById('percentage').innerText = percentage.toFixed(2) + '%';
+            } catch (error) {
+                console.error('Error calculating data:', error);
+                document.getElementById('percentage').innerText = 'Error';
+            }
+        }
 
-// Run the calculation
-calculatePercentage();
+        // Run the calculation
+        calculatePercentage();
+    </script>
+</body>
+</html>
