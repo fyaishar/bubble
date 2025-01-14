@@ -20,7 +20,8 @@
         }
         img {
             width: 40%; /* Start at 40% */
-            transition: width 0.5s ease, height 0.5s ease; /* Smooth growth animation */
+            height: auto; /* Maintain aspect ratio */
+            transition: transform 0.5s ease; /* Smooth scaling animation */
         }
         #percentage {
             font-size: 120px; /* Large percentage size */
@@ -71,12 +72,12 @@
 
                 // Adjust image size
                 const image = document.getElementById('dynamic-image');
-                let newSize = 40; // Start at 40%
+                let scale = 1; // Base scale (100%)
                 if (percentage > 40) {
-                    newSize += (percentage - 40) * 3; // Grow by 3% for every percentage point above 40
+                    scale += ((percentage - 40) * 3) / 100; // Increase scale based on percentage
                 }
-                newSize = Math.min(newSize, 100); // Cap at 100%
-                image.style.width = `${newSize}%`;
+                scale = Math.min(scale, 2.5); // Cap at 2.5x the original size (100%)
+                image.style.transform = `scale(${scale})`; // Apply uniform scaling
             } catch (error) {
                 document.getElementById('percentage').innerText = 'Error';
             }
