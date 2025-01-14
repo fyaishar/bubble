@@ -12,11 +12,19 @@
             background-color: black;
             color: white;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Prevent scroll due to large image */
+        }
+        .container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            height: 100%;
         }
         img {
             width: 40%; /* Start at 40% */
@@ -24,18 +32,20 @@
             transition: transform 0.5s ease; /* Smooth scaling animation */
         }
         #percentage {
+            position: absolute; /* Place on top of the image */
             font-size: 120px; /* Large percentage size */
             font-weight: bold;
-            margin-top: 20px;
             color: white; /* Modern clean font color */
             text-align: center;
-            visibility: hidden; /* Hidden until calculated */
+            pointer-events: none; /* Ensure it doesn't block clicks */
         }
     </style>
 </head>
 <body>
-    <img id="dynamic-image" src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
-    <div id="percentage"></div>
+    <div class="container">
+        <img id="dynamic-image" src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
+        <div id="percentage"></div>
+    </div>
     <script>
         // Alpha Vantage API key
         const API_KEY = '1Q997OJZEAUKB8KL';
@@ -68,7 +78,6 @@
                 // Update percentage display
                 const percentageDiv = document.getElementById('percentage');
                 percentageDiv.innerText = Math.round(percentage) + '%';
-                percentageDiv.style.visibility = 'visible'; // Show the percentage
 
                 // Adjust image size
                 const image = document.getElementById('dynamic-image');
