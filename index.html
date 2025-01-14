@@ -12,47 +12,29 @@
             background-color: black;
             color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             font-family: 'Roboto', sans-serif;
-            overflow: hidden; /* Prevent scrollbars from appearing */
         }
-
-        #container {
-            position: relative;
-            width: 90%;
-            height: 70%;
-        }
-
         img {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%; /* Base size */
-            height: 100%;
-            transform-origin: center center; /* Scale from the center */
-            transition: transform 0.5s ease; /* Smooth growth animation */
+            width: 40%; /* Start at 40% */
+            transition: width 0.5s ease, height 0.5s ease; /* Smooth growth animation */
         }
-
         #percentage {
-            position: absolute;
-            bottom: 10%; /* Keep percentage fixed at bottom */
-            left: 50%;
-            transform: translateX(-50%);
             font-size: 120px; /* Large percentage size */
             font-weight: bold;
-            color: white;
+            margin-top: 20px;
+            color: white; /* Modern clean font color */
             text-align: center;
             visibility: hidden; /* Hidden until calculated */
         }
     </style>
 </head>
 <body>
-    <div id="container">
-        <img id="dynamic-image" src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
-        <div id="percentage"></div>
-    </div>
+    <img id="dynamic-image" src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
+    <div id="percentage"></div>
     <script>
         // Alpha Vantage API key
         const API_KEY = '1Q997OJZEAUKB8KL';
@@ -71,32 +53,30 @@
             }
         }
 
-        // Calculate and display the percentage and grow the image
+        // Calculate and display the percentage and adjust image size
         async function calculatePercentage() {
             const HIGH_2000 = 1552.87; // SPX high on March 24, 2000
             const CLOSE_2023 = 4607.35; // SPX close on December 7, 2023
-            const BASE_PERCENTAGE = 40; // Benchmark percentage
-            const MAX_PERCENTAGE = 100; // Max allowed percentage
 
             try {
                 const SPX = await fetchLatestSPX(); // Fetch latest SPX value
 
                 // Corrected percentage calculation with absolute value and rounded to the nearest whole number
                 const percentage = Math.abs(((SPX - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100);
-                const roundedPercentage = Math.round(percentage);
 
-                // Calculate image growth
-                const growthFactor = Math.min(MAX_PERCENTAGE, Math.max(BASE_PERCENTAGE, roundedPercentage));
-                const scale = 1 + ((growthFactor - BASE_PERCENTAGE) * 0.03); // 3% growth per percentage point
-
-                // Apply image scaling
-                const image = document.getElementById('dynamic-image');
-                image.style.transform = `scale(${scale})`;
-
-                // Display the result
+                // Update percentage display
                 const percentageDiv = document.getElementById('percentage');
-                percentageDiv.innerText = roundedPercentage + '%';
+                percentageDiv.innerText = Math.round(percentage) + '%';
                 percentageDiv.style.visibility = 'visible'; // Show the percentage
+
+                // Adjust image size
+                const image = document.getElementById('dynamic-image');
+                let newSize = 40; // Start at 40%
+                if (percentage > 40) {
+                    newSize += (percentage - 40) * 3; // Grow by 3% for every percentage point above 40
+                }
+                newSize = Math.min(newSize, 100); // Cap at 100%
+                image.style.width = `${newSize}%`;
             } catch (error) {
                 document.getElementById('percentage').innerText = 'Error';
             }
