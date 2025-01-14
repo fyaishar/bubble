@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Minimalist Website</title>
+    <title>Dynamic Image Growth</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;700&display=swap');
 
@@ -12,29 +12,47 @@
             background-color: black;
             color: white;
             display: flex;
-            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             font-family: 'Roboto', sans-serif;
+            overflow: hidden; /* Prevent scrollbars from appearing */
         }
+
+        #container {
+            position: relative;
+            width: 90%;
+            height: 70%;
+        }
+
         img {
-            max-width: 90%;
-            max-height: 70%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%; /* Base size */
+            height: 100%;
+            transform-origin: center center; /* Scale from the center */
+            transition: transform 0.5s ease; /* Smooth growth animation */
         }
+
         #percentage {
-            font-size: 70px; /* Large percentage size */
+            position: absolute;
+            bottom: 10%; /* Keep percentage fixed at bottom */
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 120px; /* Large percentage size */
             font-weight: bold;
-            margin-top: 20px;
-            color: white; /* Modern clean font color */
+            color: white;
             text-align: center;
             visibility: hidden; /* Hidden until calculated */
         }
     </style>
 </head>
 <body>
-    <img src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
-    <div id="percentage"></div>
+    <div id="container">
+        <img id="dynamic-image" src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
+        <div id="percentage"></div>
+    </div>
     <script>
         // Alpha Vantage API key
         const API_KEY = '1Q997OJZEAUKB8KL';
@@ -53,20 +71,31 @@
             }
         }
 
-        // Calculate and display the percentage
+        // Calculate and display the percentage and grow the image
         async function calculatePercentage() {
             const HIGH_2000 = 1552.87; // SPX high on March 24, 2000
             const CLOSE_2023 = 4607.35; // SPX close on December 7, 2023
+            const BASE_PERCENTAGE = 40; // Benchmark percentage
+            const MAX_PERCENTAGE = 100; // Max allowed percentage
 
             try {
                 const SPX = await fetchLatestSPX(); // Fetch latest SPX value
 
                 // Corrected percentage calculation with absolute value and rounded to the nearest whole number
                 const percentage = Math.abs(((SPX - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100);
+                const roundedPercentage = Math.round(percentage);
 
-                // Display the result, rounded to a whole number
+                // Calculate image growth
+                const growthFactor = Math.min(MAX_PERCENTAGE, Math.max(BASE_PERCENTAGE, roundedPercentage));
+                const scale = 1 + ((growthFactor - BASE_PERCENTAGE) * 0.03); // 3% growth per percentage point
+
+                // Apply image scaling
+                const image = document.getElementById('dynamic-image');
+                image.style.transform = `scale(${scale})`;
+
+                // Display the result
                 const percentageDiv = document.getElementById('percentage');
-                percentageDiv.innerText = Math.round(percentage) + '%';
+                percentageDiv.innerText = roundedPercentage + '%';
                 percentageDiv.style.visibility = 'visible'; // Show the percentage
             } catch (error) {
                 document.getElementById('percentage').innerText = 'Error';
