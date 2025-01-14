@@ -8,18 +8,79 @@
         body {
             margin: 0;
             background-color: black;
+            color: white;
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
+            font-family: Arial, sans-serif;
         }
         img {
             max-width: 90%;
-            max-height: 90%;
+            max-height: 70%;
+        }
+        #percentage {
+            font-size: 80px;
+            font-weight: bold;
+            margin-top: 20px;
+            color: #4CAF50;
+            text-align: center;
         }
     </style>
 </head>
 <body>
     <img src="https://i.imgur.com/3UogxLd.jpeg" alt="Centered Image">
+    <div id="percentage">Loading...</div>
+    <script>
+        // Polygon.io API key
+        const API_KEY = 'kR0wEd2kcd7WaQhxmBLMOpkDtNxiXfVE';
+
+        // Historical dates
+        const HIGH_2000_DATE = '2000-03-24';
+        const CLOSE_2023_DATE = '2023-12-07';
+
+        // Fetch historical SPX data
+        async function fetchHistoricalSPX(date) {
+            const url = `https://api.polygon.io/v1/open-close/SPX/${date}?adjusted=true&apiKey=${API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.close; // Close price for the given date
+        }
+
+        // Fetch latest SPX and USM2 values
+        async function fetchLatest(symbol) {
+            const url = `https://api.polygon.io/v2/last/trade/${symbol}?apiKey=${API_KEY}`;
+            const response = await fetch(url);
+            const data = await response.json();
+            return data.last.price; // Latest price
+        }
+
+        // Calculate and display the percentage
+        async function calculatePercentage() {
+            try {
+                // Fetch historical data
+                const HIGH_2000 = await fetchHistoricalSPX(HIGH_2000_DATE);
+                const CLOSE_2023 = await fetchHistoricalSPX(CLOSE_2023_DATE);
+
+                // Fetch latest SPX and USM2 data
+                const SPX = await fetchLatest('SPX');
+                const USM2 = await fetchLatest('USM2'); // Replace 'USM2' with the correct ticker
+
+                // Perform the calculation
+                const calculatedValue = (SPX / USM2) * 10000000000;
+                const percentage = ((calculatedValue - CLOSE_2023) / (HIGH_2000 - CLOSE_2023)) * 100;
+
+                // Display the result
+                document.getElementById('percentage').innerText = percentage.toFixed(2) + '%';
+            } catch (error) {
+                console.error('Error fetching data:', error);
+                document.getElementById('percentage').innerText = 'Error';
+            }
+        }
+
+        // Run the calculation
+        calculatePercentage();
+    </script>
 </body>
 </html>
