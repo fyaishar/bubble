@@ -66,7 +66,9 @@
 
                 // Display the result, rounded to a whole number
                 const percentageDiv = document.getElementById('percentage');
-                percentageDiv.innerText = Math.round(percentage) + '%';
+                // Display the result, rounded to one decimal place
+                const percentageDiv = document.getElementById('percentage');
+                percentageDiv.innerText = percentage.toFixed(1) + '%';
                 percentageDiv.style.visibility = 'visible'; // Show the percentage
             } catch (error) {
                 document.getElementById('percentage').innerText = 'Error';
